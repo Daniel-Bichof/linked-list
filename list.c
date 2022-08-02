@@ -42,7 +42,6 @@ void insertLast(int num)
 	struct node *currentElement = head;
     currentElement->next = tmp;
     
- 
     printf("tmp: %i\n", tmp->data);
     printf("tmp: %p\n", tmp->prev);
     printf("tmp: %p\n", tmp->next);
@@ -50,7 +49,6 @@ void insertLast(int num)
     
     printf("currentElement: %i\n", currentElement->data);
 }
-
 
 void printList(node *i)
 {
