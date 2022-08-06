@@ -1,15 +1,20 @@
+// LISTA DUPLA ENCADEADA NÃO CIRCULAR
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 
-// LISTA DUPLA LINKADA CIRCULAR
+#define MAX_MUSICA 1024
+#define DELIMITADOR ","
+#define QUEBRA "\n"
 
 typedef struct node
 {
     struct node *prev;
     char *musica;
     char *artista;
-    int *duracao;
+    char *duracao;
     struct node *next;
 } node;
 
@@ -19,96 +24,96 @@ struct node *current = NULL;
 
 int length();
 bool isEmpty();
-void insertBeginning(char *musica);
+void insertBeginning(char *musica, char *artista, char *tempo);
 void insertMiddle(char *musica, int pos);
-void insertLast(char *musica);
+void insertLast(char *musica, char *artista, char *tempo);
 void printList();
 int menu();
 
-int main(void)
+int main(int argc, char *argv[])
 {
     head = (struct node *)malloc(sizeof(struct node));
     head = NULL;
 
-    int op, num, pos, c;
-    char *musica, artista;
-    system("clear");
+    if (argc != 2)
+    {
+        printf("Uso: ./list [arquivo]\n");
+    }
+    else
+    {
+        char *teste;
+        teste ="dani";
+        insertBeginning(teste, "teste", "1");
+        teste ="show";
+        insertBeginning(teste, "top", "2");
+
+        printList();
+        int op = menu();
+        FILE *fp = fopen(argv[1], "r");
+        char *argFile;
+        char col1, col2, col3;
+        char linha[MAX_MUSICA];
+        argFile = argv[1];
+        char *campo;
+        int countLinha = 0;
+        char *musica, *artista, *tempo;
+
+        while (fgets(linha, MAX_MUSICA, fp) != NULL)
+        {   
+            // printf("Linha %i: ", countLinha);
+                // separa tokens
+            // printf("Campos:\n");
+            campo = strtok(linha, DELIMITADOR);
+
+            while (campo != NULL)
+            {
+                if(countLinha > 0)
+                {
+                    musica = campo;
+                    artista = strtok(NULL, DELIMITADOR);
+                    tempo = strtok(NULL, DELIMITADOR);
+                    // printf("%s,%s %s\n", musica, artista, tempo);
+                    insertBeginning(musica, artista, tempo);
+                }
+                campo = strtok(NULL, DELIMITADOR);
+            }
+            countLinha ++;
+        }
+
+        while ((col1 = fgetc(fp)) != EOF);
     
-
-while (1) {
-		op = menu();
-		switch (op) {
-		case 1:
-			printf("Digite a musica desejada: ");
-			scanf("%s", musica);
-			while ((c = getchar()) != '\n' && c != EOF) {} // sempre limpe o buffer do teclado.
-			insertBeginning(musica);
-			break;
-		case 2:
-			printf("Digite a musica desejada: ");
-			scanf("%c", musica);
-			while ((c = getchar()) != '\n' && c != EOF) {} // sempre limpe o buffer do teclado.
-			insertLast(musica);
-			break;
-		case 3:
-			printf("Digite a musica desejada: ");
-			scanf("%c", musica);
-			while ((c = getchar()) != '\n' && c != EOF) {} // sempre limpe o buffer do teclado.
-			printf("Digite a posicao que deseja inserir: ");
-			scanf("%i", &pos);
-			while ((c = getchar()) != '\n' && c != EOF) {} // sempre limpe o buffer do teclado.
-			insertMiddle(musica, pos);
-			break;
-		/*case 4:
-			int res;
-			printf("Digite a musica a ser removida: ");
-			scanf("%c", musica);
-			while ((c = getchar()) != '\n' && c != EOF) {} // sempre limpe o buffer do teclado.
-			res = Remover(musica);
-			if (res == 1)
-				printf("musica removida.");
-			else
-				printf("musica nao encontrado.");
-			break;
-        */
-		case 5:
-			printList();
-			break;
-		case 6:
-			return 0;
-		default:
-			printf("Invalido\n");
-		}
-	}
-	return 0;
-
-    insertLast("Happy together");
-    insertLast("Africa");
-    insertBeginning("Yellow submarine");
-    insertBeginning("Blackbird");
-    printList();
-    
-    // printf("head: %s\n", head->data);
-
-    printf("length: %i\n", length());
-
+        while (1)
+        {
+            switch (op)
+            {
+            case 1:
+                printList();
+                return 0;
+            case 2:
+                printf("saindo \n");
+                return 0;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 int menu()
 {
-    
-	int op, c;
+    int op, c;
 
-	printf("1.Inserir no inicio da lista encadeada simples\n");
-	printf("2.Inserir no fim da lista encadeada simples\n");
-	printf("3.Inserir no meio da lista encadeada simples\n");
-	printf("4.Remover da lista encadeada simples\n");
-	printf("5.Listar a lista encadeada simples\n");
-	printf("6.Sair\n");
-	printf("Digite sua escolha: ");
+    printf("1.Listar a lista encadeada dupla\n");
+    printf("2.Sair\n");
+    printf("Digite sua escolha: ");
+    scanf("%d", &op);
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
+    }
 
+    system("clear");
+    return op;
 }
-
 
 int length()
 {
@@ -127,7 +132,7 @@ bool isEmpty()
     return head == NULL;
 }
 
-void insertBeginning(char *musica)
+void insertBeginning(char *musica, char *artista, char *tempo)
 {
     struct node *tmp = malloc(sizeof(struct node));
     tmp->musica = musica;
@@ -142,8 +147,8 @@ void insertBeginning(char *musica)
         tmp->next = head;
         head = tmp;
     }
-
 }
+
 void insertMiddle(char *musica, int pos)
 {
     struct node *newMusic = malloc(sizeof(struct node));
@@ -152,28 +157,33 @@ void insertMiddle(char *musica, int pos)
 
     newMusic->musica = musica;
 
-    if (pos == 0){
+    if (pos == 0)
+    {
         head = newMusic;
         head->next = NULL;
-    } else
+    }
+    else
     {
         current = head;
-        for(int i = 0; i < pos; i++){
+        for (int i = 0; i < pos; i++)
+        {
             current = current->next;
         }
         tmp->next = newMusic;
     }
 }
 
-void insertLast(char *musica)
+void insertLast(char *musica, char *artista, char *tempo)
 {
     struct node *tmp, *currentElement;
     tmp = malloc(sizeof(struct node));
     currentElement = malloc(sizeof(struct node));
 
     tmp->musica = musica;
+    tmp->artista = artista;
+    tmp->duracao = tempo;
 
-   if (head == NULL)
+    if (head == NULL)
     {
         head = tmp;
         head->next = NULL;
@@ -181,7 +191,7 @@ void insertLast(char *musica)
     else
     {
         currentElement = head;
-        while(currentElement->next != NULL)
+        while (currentElement->next != NULL)
         {
             currentElement = currentElement->next;
         }
@@ -201,16 +211,18 @@ void printList()
     printf("[ ");
     while (current != NULL)
     {
-        
-    printf("' ");
+
+        printf("' ");
         printf("%s ", current->musica);
-        if(current->next != NULL)
+        if (current->next != NULL)
         {
             printf("', ");
-        } else { 
+        }
+        else
+        {
             printf("' ");
         }
         current = current->next;
     }
-        printf("]\n");
+    printf("]\n");
 }
